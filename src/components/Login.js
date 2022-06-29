@@ -14,11 +14,15 @@ export default function Login() {
 
 	function userLogin(e) {
 		e.preventDefault();
-		console.log("bzz")
-	
-		// const promise = axios.post(`${URL}:${PORT}/`)
-		// promise.then((res) => console.log(res.data))
-		// promise.catch((err) => err.response.status);
+		
+		const data = {
+			email: email,
+			password: password
+		}
+
+		const promise = axios.post(`${URL}:${PORT}/`, data)
+		promise.then((res) => console.log(res.data))
+		promise.catch((err) => console.log(err));
 	
 		return;
 	}

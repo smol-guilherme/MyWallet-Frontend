@@ -2,7 +2,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 
 import axios from 'axios';
+import { hashSync } from 'bcryptjs';
 import styled from 'styled-components';
+
+const URL = 'http://localhost';
+const PORT = '5000';
+const SEC_FACTOR = 10;
 
 export default function Signup() {
 	const [name, setName] = useState("");
@@ -12,9 +17,15 @@ export default function Signup() {
 
     function userSignup(e) {
         e.preventDefault();
-        console.log("bzz")
-    
-        // const promise = axios.post(`${URL}:${PORT}/`)
+
+		const data = {
+			name: name,
+			email: email,
+			password: hashSync(password, SEC_FACTOR)
+		}
+        const promise = axios.post(`${URL}:${PORT}/signup`, data);
+		promise.then((res) => console.log(res.data))
+		promise.catch((err) => console.log(err))
         // promise.then((res) => console.log(res.data))
         // promise.catch((err) => err.response.status);
     
