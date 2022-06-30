@@ -15,7 +15,7 @@ export default function App() {
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/entries" element={<Entries />} />
-          <Route path="/new" element={<Form />} />
+          <Route path="/submit" element={<Form />} />
         </Routes>
       </BrowserRouter>
     </UserContextProvider>

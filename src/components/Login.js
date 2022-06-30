@@ -12,7 +12,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setUserToken } = useContext(UserContext);
+  const { setUserSession } = useContext(UserContext);
 
   function userLogin(e) {
     e.preventDefault();
@@ -24,8 +24,8 @@ export default function Login() {
 
     const promise = axios.post(`${URL}:${PORT}/`, data);
     promise.then((res) => {
-      setUserToken(res.data);
-      navigate('/entries');
+      setUserSession(res.data);
+      navigate("/entries");
     });
     promise.catch((err) => console.log(err));
     return;
