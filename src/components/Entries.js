@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import UserContext from "./context/UserContext";
 
 import axios from "axios";
@@ -21,38 +21,51 @@ function Entry({ date, description, value }) {
 
 export default function Entries() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const dataFromResponse = location.state;
+  console.log(dataFromResponse);
   const { userSession } = useContext(UserContext);
 
   useEffect(() => {
-    if(userSession.token === "") {
-      navigate("/")
+    console.log(userSession);
+    if (userSession === undefined) {
+      navigate("/");
     }
-  }, [userSession])
+  }, []);
 
   const Data = () => {
-    const requestHeader = {
-      header: {
-        Authorization: `Bearer ${userSession.token}`,
-      },
-    };
-    const promise = axios.get(`${URL}:${PORT}/entries`, {}, requestHeader);
-    promise.then((res) => {
-      const entries = res.data;
-      const list = entries.map((item, index) => (
-        <Entry key={index} data={item} />
-      ));
-      return list;
-    });
-    promise.catch((err) => {
-      console.log(err);
-      return <></>;
-    });
+    if (dataFromResponse && dataFromResponse.length === 0) {
+      const requisitionHeader = {
+        header: {
+          Authorization: `Bearer ${userSession.token}`,
+        },
+      };
+      const promise = axios.get(
+        `${URL}:${PORT}/entries`,
+        {},
+        requisitionHeader
+      );
+      promise.then((res) => {
+        const entries = res.data;
+        const list = entries.map((item, index) => (
+          <Entry key={index} data={item} />
+        ));
+        return list;
+      });
+      promise.catch((err) => {
+        console.log(err);
+        return <></>;
+      });
+    }
+    return dataFromResponse.map((item, index) => (
+      <Entry key={index} data={item} />
+    ));
   };
 
   return (
     <Container>
       <HeaderWrapper>
-        <Header>Olá, {userSession.name}</Header>
+        <Header>Olá, {userSession && userSession.name}</Header>
         <ion-icon name="exit-outline"></ion-icon>
       </HeaderWrapper>
       <ContentWrapper>
@@ -60,11 +73,15 @@ export default function Entries() {
         <ButtonWrapper></ButtonWrapper>
       </ContentWrapper>
       <ButtonWrapper>
-        <Button onClick={() => navigate('/submit', { state: { operation: true }} )}>
+        <Button
+          onClick={() => navigate("/submit", { state: { operation: true } })}
+        >
           <ion-icon name="add-circle-outline"></ion-icon>
           <p>Nova entrada</p>
         </Button>
-        <Button onClick={() => navigate('/submit', { state: { operation: false }} )}>
+        <Button
+          onClick={() => navigate("/submit", { state: { operation: false } })}
+        >
           <ion-icon name="remove-circle-outline"></ion-icon>
           <p>Nova saida</p>
         </Button>
@@ -89,15 +106,15 @@ const HeaderWrapper = styled.div`
   height: 40px;
   font-size: 26px;
   text-align: center;
-  color: #FFFFFF;
+  color: #ffffff;
   justify-content: space-between;
-  padding: 8px 24px;
+  padding: 16px 20px;
   box-sizing: border-box;
 `;
 
 const Header = styled.h1`
   display: flex;
-  width: 90%;
+  width: 100%;
   font-family: "Raleway", sans-serif;
   color: #ffffff;
   text-align: center;
@@ -108,7 +125,9 @@ const Header = styled.h1`
 const ContentWrapper = styled.div`
   width: 90%;
   height: 60vh;
-  background-color: transparent;
+  background-color: #FFFFFF;
+  margin: 15px 0;
+  border-radius: 8px;
 `;
 
 const EntryItem = styled.div`
@@ -138,6 +157,7 @@ const Button = styled.div`
   background-color: #a328d6;
   color: #ffffff;
   padding: 8px;
+  border-radius: 5px;
   box-sizing: border-box;
 
   p {

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import UserContext from "./context/UserContext";
 
 import axios from "axios";
@@ -9,8 +9,11 @@ const URL = "http://localhost";
 const PORT = "5000";
 
 export default function Form() {
-  const [value, setValue] = useState();
+  const location = useLocation();
   const navigate = useNavigate();
+  const [operation, setOperation] = useState(location.state.operation);
+  const [value, setValue] = useState("");
+  const [description, setDescription] = useState("");
   const { userSession } = useContext(UserContext);
 
   useEffect(() => {
@@ -21,10 +24,34 @@ export default function Form() {
 
   function submitEntry(e) {
     e.preventDefault();
+    console.log("click");
+    const signedValue = operation ? value : -value;
+    const data = {
+      value: signedValue,
+      description: description,
+    };
+
+    const requisitionHeader = {
+      headers: {
+        Authorization: `Bearer ${userSession.token}`,
+      },
+    };
+    console.log(requisitionHeader);
+    const promise = axios.post(
+      `${URL}:${PORT}/data`,
+      data,
+      requisitionHeader
+    );
+    promise.then((res) => {
+      const entriesList = res.data;
+      navigate("/entries", { state: { data: entriesList } });
+    });
+    promise.catch((err) => console.log(err));
   }
 
   return (
     <Container>
+      <Header>Nova {operation ? "entrada" : "saida"}</Header>
       <FormWrapper onSubmit={submitEntry}>
         <FormInput
           value={value}
@@ -34,13 +61,13 @@ export default function Form() {
           required
         />
         <FormInput
-          value={value}
-          placeholder="Valor"
-          onChange={(e) => setValue(e.target.value)}
-          type={"number"}
+          value={description}
+          placeholder="Descrição"
+          onChange={(e) => setDescription(e.target.value)}
+          type={"text"}
           required
         />
-        <FormButton type={"submit"}>ENTRAR</FormButton>
+        <FormButton type={"submit"}>Salvar {operation ? "entrada" : "saída"}</FormButton>
       </FormWrapper>
     </Container>
   );
@@ -52,15 +79,29 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   background-color: #8c11be;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+`;
+
+const Header = styled.h1`
+  font-family: "Raleway", sans-serif;
+  text-align: center;
+  display: flex;
+  width: 100%;
+  height: 40px;
+  font-size: 26px;
+  text-align: center;
+  color: #ffffff;
+  justify-content: space-between;
+  padding: 16px 20px;
+  box-sizing: border-box;
 `;
 
 const FormWrapper = styled.form`
   flex-direction: column;
   align-items: center;
   display: flex;
-  margin-top: 40px;
+  margin-top: 20px;
   height: 30vh;
   width: 100%;
 `;
