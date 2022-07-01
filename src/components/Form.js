@@ -20,14 +20,14 @@ export default function Form() {
     if (userSession.token === "") {
       navigate("/");
     }
-  }, [userSession]);
+  }, [userSession, navigate]);
 
   function submitEntry(e) {
     e.preventDefault();
     console.log("click");
     const signedValue = operation ? value : -value;
     const data = {
-      value: signedValue,
+      value: parseInt(signedValue),
       description: description,
     };
 
@@ -37,11 +37,7 @@ export default function Form() {
       },
     };
     console.log(requisitionHeader);
-    const promise = axios.post(
-      `${URL}:${PORT}/data`,
-      data,
-      requisitionHeader
-    );
+    const promise = axios.post(`${URL}:${PORT}/data`, data, requisitionHeader);
     promise.then((res) => {
       const entriesList = res.data;
       navigate("/entries", { state: { data: entriesList } });
@@ -67,7 +63,9 @@ export default function Form() {
           type={"text"}
           required
         />
-        <FormButton type={"submit"}>Salvar {operation ? "entrada" : "saída"}</FormButton>
+        <FormButton type={"submit"}>
+          Salvar {operation ? "entrada" : "saída"}
+        </FormButton>
       </FormWrapper>
     </Container>
   );
