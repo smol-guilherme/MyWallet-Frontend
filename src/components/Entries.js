@@ -8,15 +8,18 @@ import styled from "styled-components";
 const URL = "http://localhost";
 const PORT = "5000";
 
-function Entry({ data }) {
+function Entry({ data, submitDelete }) {
   const valueSign = data.value > 0 ? "#03AC00" : "#C70000";
   return (
-    <EntryBox>
+    <EntryBox iid={data.id}>
       <EntryItem>
           <Date>{data.date}</Date>
           <Description>{data.description}</Description>
       </EntryItem>
-      <EntryValue valueSign={valueSign}>{data.value}</EntryValue>
+      <EntryItem>
+        <EntryValue valueSign={valueSign}>{data.value}</EntryValue>
+        <ion-icon onClick={() => submitDelete(data.id)} name="close-outline"></ion-icon>
+      </EntryItem>
     </EntryBox>
   );
 }
@@ -66,6 +69,28 @@ export default function Entries() {
     });
   }
 
+  function submitDelete(itemData) {
+    if(!window.confirm("Tem certeza que deseja deletar este item?")) {
+      return;
+    }
+    const requisitionHeader = {
+      headers: {
+        Authorization: `Bearer ${userSession.token}`,
+      },
+    };
+    console.log(itemData);
+    const promise = axios.delete(`${URL}:${PORT}/data/${itemData}`, requisitionHeader);
+    promise.then((res) => {
+      const entries = res.data;
+      console.log(entries);
+      setTotal(entries.total);
+      setData(entries.data);
+    });
+    promise.catch((err) => {
+      console.log(err);
+    });
+  }
+
   const Data = () => {
     if (data === undefined || data.length === 0) {
       return <Load>Não há registros de entrada ou saída</Load>;
@@ -73,7 +98,7 @@ export default function Entries() {
     return (
       <>
         {data.map((item, index) => (
-          <Entry key={index} data={item} />
+          <Entry key={index} submitDelete={submitDelete} data={item} />
         ))}
       </>
     );
@@ -160,7 +185,7 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #ffffff;
+  background-color: #FFFFFF;
   color: #868686;
   text-align: center;
   margin: 15px 0;
@@ -221,7 +246,7 @@ const Date = styled.p`
 `
 
 const Description = styled.p`
-  max-width: 14ch;
+  max-width: 22vh;
   color: #000000;
   overflow: hidden;
   overflow-x: scroll;
