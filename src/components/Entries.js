@@ -20,12 +20,12 @@ function Entry({ data }) {
   );
 }
 
-function Footer() {
-  // const valueSign = data.value > 0 ? "#03AC00" : "#C70000";
+function Footer({ total }) {
+  const valueSign = total > 0 ? "#03AC00" : "#C70000";
   return (
     <FooterBox>
       <Label>SALDO</Label>
-      <ValueLabel>8008</ValueLabel>
+      <ValueLabel valueSign={valueSign}>{total}</ValueLabel>
     </FooterBox>
   );
 }
@@ -36,7 +36,9 @@ export default function Entries() {
   // const { dataFromResponse } = location.state;
   const { userSession } = useContext(UserContext);
   const [data, setData] = useState(undefined);
+  const [total, setTotal] = useState(0);
 
+  console.log("data ",data," total ",total);
   useEffect(() => {
     if (userSession === undefined) {
       navigate("/");
@@ -54,7 +56,9 @@ export default function Entries() {
     const promise = axios.get(`${URL}:${PORT}/data`, requisitionHeader);
     promise.then((res) => {
       const entries = res.data;
-      setData(entries);
+      console.log(entries);
+      setTotal(entries.total)
+      setData(entries.data);
     });
     promise.catch((err) => {
       console.log(err);
@@ -68,7 +72,7 @@ export default function Entries() {
     return (
       <>
         {data.map((item, index) => (
-          <Entry key={index} id={item._id} data={item.data} />
+          <Entry key={index} data={item} />
         ))}
       </>
     );
@@ -84,20 +88,20 @@ export default function Entries() {
         <DataWrapper>
           {<Data />}
         </DataWrapper>
-        <Footer />
+        <Footer total={total} />
       </ContentWrapper>
       <ButtonWrapper>
         <Button
           onClick={() => navigate("/submit", { state: { operation: true } })}
         >
           <ion-icon name="add-circle-outline"></ion-icon>
-          <p>Nova entrada</p>
+          <p>Nova<br/>entrada</p>
         </Button>
         <Button
           onClick={() => navigate("/submit", { state: { operation: false } })}
         >
           <ion-icon name="remove-circle-outline"></ion-icon>
-          <p>Nova saida</p>
+          <p>Nova<br/>saida</p>
         </Button>
       </ButtonWrapper>
     </Container>
@@ -136,8 +140,6 @@ const Header = styled.h1`
   overflow-wrap: break-word;
 `;
 
-
-
 const Load = styled.div`
   font-family: "Raleway", sans-serif;
   display: flex;
@@ -168,15 +170,18 @@ const ContentWrapper = styled.div`
 
 const DataWrapper = styled.div`
   display: flex;
+  height: 100%;
+  width: 100%;
   flex-direction: column;
-`
+  overflow-y: scroll;
+`;
 
 const EntryBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
-  height: 20px;
+  height: 22px;
   padding: 4px 8px;
   box-sizing: border-box;
 
@@ -216,15 +221,16 @@ const Description = styled.p`
   color: #000000;
   margin-left: 8px;
   overflow-x: hidden;
+  white-space: nowrap;
   overflow-wrap: break-word;
   text-overflow: ellipsis;
   box-sizing: border-box;
 `
 
 const EntryValue = styled.div`
-  display: flex;
-  color: ${({valueSign}) => valueSign};
   font-family: "Raleway", sans-serif;
+  color: ${({valueSign}) => valueSign};
+  display: flex;
 `;
 
 const Label = styled.h1`
@@ -236,6 +242,8 @@ const Label = styled.h1`
 
 const ValueLabel = styled.h1`
   font-family: "Raleway", sans-serif;
+  color: ${ ({valueSign}) => valueSign};
+  font-weight: 400;
   font-size: 17px;
 `;
 
@@ -257,7 +265,7 @@ const Button = styled.div`
   justify-content: space-between;
   background-color: #a328d6;
   color: #ffffff;
-  padding: 20px;
+  padding: 12px;
   font-size: 24px;
   border-radius: 5px;
   box-sizing: border-box;
@@ -266,5 +274,7 @@ const Button = styled.div`
     font-family: "Raleway", sans-serif;
     font-size: 17px;
     font-weight: bold;
+    letter-spacing: 0.1ch;
+    line-height: 20px;
   }
 `;
