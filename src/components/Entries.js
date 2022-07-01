@@ -13,7 +13,8 @@ function Entry({ data }) {
   return (
     <EntryBox>
       <EntryItem>
-          {data.date}<Description>{data.description}</Description>
+          <Date>{data.date}</Date>
+          <Description>{data.description}</Description>
       </EntryItem>
       <EntryValue valueSign={valueSign}>{data.value}</EntryValue>
     </EntryBox>
@@ -176,6 +177,21 @@ const DataWrapper = styled.div`
   overflow-y: scroll;
 `;
 
+const FooterBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 20px;
+  padding: 4px 8px;
+  box-sizing: border-box;
+
+  div {
+    padding-top: 8px;
+    padding: 0 4px;
+  }
+`;
+
 const EntryBox = styled.div`
   display: flex;
   justify-content: space-between;
@@ -193,44 +209,39 @@ const EntryBox = styled.div`
   }
 `;
 
-const FooterBox = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 20px;
-  padding: 4px 8px;
-  box-sizing: border-box;
-
-  div {
-    padding-top: 8px;
-    padding: 0 4px;
-  }
-`
-
 const EntryItem = styled.div`
   font-family: "Raleway", sans-serif;
   height: 20px;
-  width: auto;
   color: #C6C6C6;
-  display: flex;
 `;
 
-const Description = styled.p`
+const Date = styled.p`
   display: flex;
+  width: 52px;
+`
+
+const Description = styled.p`
+  max-width: 14ch;
   color: #000000;
-  margin-left: 8px;
-  overflow-x: hidden;
+  overflow: hidden;
+  overflow-x: scroll;
   white-space: nowrap;
-  overflow-wrap: break-word;
   text-overflow: ellipsis;
   box-sizing: border-box;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 const EntryValue = styled.div`
   font-family: "Raleway", sans-serif;
   color: ${({valueSign}) => valueSign};
   display: flex;
+  max-width: 80px;
+  justify-content: right;
 `;
 
 const Label = styled.h1`
