@@ -8,13 +8,14 @@ import styled from "styled-components";
 const URL = "http://localhost";
 const PORT = "5000";
 
-function Entry({ data, submitDelete }) {
+function Entry({ data, submitDelete, navigate }) {
   const valueSign = data.value > 0 ? "#03AC00" : "#C70000";
+  const op = data.value > 0 ? true : false;
   return (
     <EntryBox iid={data.id}>
       <EntryItem>
           <Date>{data.date}</Date>
-          <Description>{data.description}</Description>
+          <Description onClick={() => navigate("/submit", { state: { operation: op, edit: true, data: data } })}>{data.description}</Description>
       </EntryItem>
       <EntryItem>
         <EntryValue valueSign={valueSign}>{data.value}</EntryValue>
@@ -42,7 +43,6 @@ export default function Entries() {
   const [data, setData] = useState(undefined);
   const [total, setTotal] = useState(0);
 
-  console.log("data ",data," total ",total);
   useEffect(() => {
     if (userSession === undefined) {
       navigate("/");
@@ -60,7 +60,6 @@ export default function Entries() {
     const promise = axios.get(`${URL}:${PORT}/data`, requisitionHeader);
     promise.then((res) => {
       const entries = res.data;
-      console.log(entries);
       setTotal(entries.total)
       setData(entries.data);
     });
@@ -69,7 +68,7 @@ export default function Entries() {
     });
   }
 
-  function submitDelete(itemData) {
+  function submitDelete(itemId) {
     if(!window.confirm("Tem certeza que deseja deletar este item?")) {
       return;
     }
@@ -78,11 +77,9 @@ export default function Entries() {
         Authorization: `Bearer ${userSession.token}`,
       },
     };
-    console.log(itemData);
-    const promise = axios.delete(`${URL}:${PORT}/data/${itemData}`, requisitionHeader);
+    const promise = axios.delete(`${URL}:${PORT}/data/${itemId}`, requisitionHeader);
     promise.then((res) => {
       const entries = res.data;
-      console.log(entries);
       setTotal(entries.total);
       setData(entries.data);
     });
@@ -98,7 +95,7 @@ export default function Entries() {
     return (
       <>
         {data.map((item, index) => (
-          <Entry key={index} submitDelete={submitDelete} data={item} />
+          <Entry key={index} submitDelete={submitDelete} navigate={navigate} data={item} />
         ))}
       </>
     );
@@ -118,13 +115,13 @@ export default function Entries() {
       </ContentWrapper>
       <ButtonWrapper>
         <Button
-          onClick={() => navigate("/submit", { state: { operation: true } })}
+          onClick={() => navigate("/submit", { state: { operation: true, edit: false } })}
         >
           <ion-icon name="add-circle-outline"></ion-icon>
           <p>Nova<br/>entrada</p>
         </Button>
         <Button
-          onClick={() => navigate("/submit", { state: { operation: false } })}
+          onClick={() => navigate("/submit", { state: { operation: false, edit: false } })}
         >
           <ion-icon name="remove-circle-outline"></ion-icon>
           <p>Nova<br/>saida</p>

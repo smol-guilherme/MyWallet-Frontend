@@ -11,22 +11,39 @@ const PORT = "5000";
 export default function Form() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [operation, setOperation] = useState(location.state.operation);
-  const [value, setValue] = useState("");
-  const [description, setDescription] = useState("");
+  const [operation] = useState(location.state.operation);
+  const [edit] = useState(location.state.edit);
+  const [cashPattern] = useState("[0-9]{0,3}.{0,1}[0-9]{0,3},[0-9]{1,2}");
+  const [data] = useState(location.state.data || "");
+  const [value, setValue] = useState(initValue);
+  const [description, setDescription] = useState(initDescription);
   const { userSession } = useContext(UserContext);
 
   useEffect(() => {
-    if (userSession.token === "") {
+    if (!userSession) {
       navigate("/");
     }
   }, [userSession, navigate]);
 
+  function initValue() {
+    console.log(location.state.data);
+    if(location.state && location.state.data !== undefined) {
+      return location.state.data.value
+    }
+    return ""
+  }
+
+  function initDescription() {
+    if(location.state && location.state.data !== undefined) {
+      return location.state.data.description
+    }
+    return ""
+  }
+
   function submitEntry(e) {
     e.preventDefault();
-    console.log("click");
     const signedValue = operation ? value : -value;
-    const data = {
+    const submitData = {
       value: parseInt(signedValue),
       description: description,
     };
@@ -36,24 +53,57 @@ export default function Form() {
         Authorization: `Bearer ${userSession.token}`,
       },
     };
-    console.log(requisitionHeader);
-    const promise = axios.post(`${URL}:${PORT}/data`, data, requisitionHeader);
-    promise.then((res) => {
-      const entriesList = res.data;
-      navigate("/entries", { state: { data: entriesList } });
-    });
-    promise.catch((err) => console.log(err));
+    if (edit) {
+      const promise = axios.put(
+        `${URL}:${PORT}/data/${data.id}`,
+        submitData,
+        requisitionHeader
+      );
+      promise.then((res) => {
+        const entriesList = res.data;
+        navigate("/entries", { state: { data: entriesList } });
+      });
+      promise.catch((err) => console.log(err));
+    } else {
+      const promise = axios.post(
+        `${URL}:${PORT}/data`,
+        submitData,
+        requisitionHeader
+      );
+      promise.then((res) => {
+        const entriesList = res.data;
+        navigate("/entries", { state: { data: entriesList } });
+      });
+      promise.catch((err) => console.log(err));
+    }
   }
+
+  function formatAndSet(formsValue) {
+    let quantity = `${formsValue * 100}`;
+    console.log(quantity);
+    const data = Intl.NumberFormat("pt-PT", {
+      style: "decimal",
+      minimumFractionDigits: 2,
+    }).format(parseFloat(quantity) / 100);
+    console.log(data);
+    setValue(data);
+  }
+  // onChange={(e) => setValue(e.target.value)}
 
   return (
     <Container>
-      <Header>Nova {operation ? "entrada" : "saida"}</Header>
+      <Header>
+        {edit ? "Editar " : "Nova "} {operation ? "entrada" : "saida"}
+      </Header>
       <FormWrapper onSubmit={submitEntry}>
         <FormInput
           value={value}
           placeholder="Valor"
+          // onChange={(e) => formatAndSet(e.target.value)}
           onChange={(e) => setValue(e.target.value)}
-          type={"number"}
+          type={"text"}
+          pattern={cashPattern}
+          title={"Digite apenas numeros"}
           required
         />
         <FormInput
@@ -64,7 +114,7 @@ export default function Form() {
           required
         />
         <FormButton type={"submit"}>
-          Salvar {operation ? "entrada" : "saída"}
+          {edit ? "Atualizar " : "Salvar "} {operation ? "entrada" : "saída"}
         </FormButton>
       </FormWrapper>
     </Container>
