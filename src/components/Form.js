@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import UserContext from "./context/UserContext";
+import DataContext from "./context/DataContext";
 
 import axios from "axios";
 import styled from "styled-components";
@@ -13,14 +14,15 @@ export default function Form() {
   const navigate = useNavigate();
   const [operation] = useState(location.state.operation);
   const [edit] = useState(location.state.edit);
-  const [cashPattern] = useState("[0-9]{0,3}.{0,1}[0-9]{0,3},[0-9]{1,2}");
+  const [cashPattern] = useState("[0-9]{1,9},[0-9]{1,2}");
   const [data] = useState(location.state.data || "");
   const [value, setValue] = useState(initValue);
   const [description, setDescription] = useState(initDescription);
   const { userSession } = useContext(UserContext);
+  const { setUserData } = useContext(DataContext);
 
   useEffect(() => {
-    if (!userSession) {
+    if (userSession === undefined) {
       navigate("/");
     }
   }, [userSession, navigate]);
@@ -42,9 +44,10 @@ export default function Form() {
 
   function submitEntry(e) {
     e.preventDefault();
-    const signedValue = operation ? value : -value;
+    const valueToCurrency = value.replace(",",".")
+    const signedValue = operation ? valueToCurrency : -valueToCurrency;
     const submitData = {
-      value: parseInt(signedValue),
+      value: parseFloat(signedValue).toFixed(2),
       description: description,
     };
 
@@ -60,8 +63,8 @@ export default function Form() {
         requisitionHeader
       );
       promise.then((res) => {
-        const entriesList = res.data;
-        navigate("/entries", { state: { data: entriesList } });
+        setUserData(res.data)
+        navigate("/entries");
       });
       promise.catch((err) => console.log(err));
     } else {
@@ -71,24 +74,12 @@ export default function Form() {
         requisitionHeader
       );
       promise.then((res) => {
-        const entriesList = res.data;
-        navigate("/entries", { state: { data: entriesList } });
+        setUserData(res.data)
+        navigate("/entries");
       });
       promise.catch((err) => console.log(err));
     }
   }
-
-  function formatAndSet(formsValue) {
-    let quantity = `${formsValue * 100}`;
-    console.log(quantity);
-    const data = Intl.NumberFormat("pt-PT", {
-      style: "decimal",
-      minimumFractionDigits: 2,
-    }).format(parseFloat(quantity) / 100);
-    console.log(data);
-    setValue(data);
-  }
-  // onChange={(e) => setValue(e.target.value)}
 
   return (
     <Container>
@@ -99,11 +90,10 @@ export default function Form() {
         <FormInput
           value={value}
           placeholder="Valor"
-          // onChange={(e) => formatAndSet(e.target.value)}
           onChange={(e) => setValue(e.target.value)}
           type={"text"}
           pattern={cashPattern}
-          title={"Digite apenas numeros"}
+          title={"Insira um numero no formato 'reais,centavos'."}
           required
         />
         <FormInput

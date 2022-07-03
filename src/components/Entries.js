@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import UserContext from "./context/UserContext";
+import DataContext from "./context/DataContext";
 
 import axios from "axios";
 import styled from "styled-components";
@@ -9,8 +10,10 @@ const URL = "http://localhost";
 const PORT = "5000";
 
 function Entry({ data, submitDelete, navigate }) {
+  console.log(data);
   const valueSign = data.value > 0 ? "#03AC00" : "#C70000";
   const op = data.value > 0 ? true : false;
+  const valueToCurrencyString = data.value.toFixed(2).toString().replace(".",",")
   return (
     <EntryBox iid={data.id}>
       <EntryItem>
@@ -18,7 +21,7 @@ function Entry({ data, submitDelete, navigate }) {
           <Description onClick={() => navigate("/submit", { state: { operation: op, edit: true, data: data } })}>{data.description}</Description>
       </EntryItem>
       <EntryItem>
-        <EntryValue valueSign={valueSign}>{data.value}</EntryValue>
+        <EntryValue valueSign={valueSign}>{valueToCurrencyString}</EntryValue>
         <ion-icon onClick={() => submitDelete(data.id)} name="close-outline"></ion-icon>
       </EntryItem>
     </EntryBox>
@@ -27,19 +30,19 @@ function Entry({ data, submitDelete, navigate }) {
 
 function Footer({ total }) {
   const valueSign = total > 0 ? "#03AC00" : "#C70000";
+  const valueToCurrencyString = total.toString().replace(".",",")
   return (
     <FooterBox>
       <Label>SALDO</Label>
-      <ValueLabel valueSign={valueSign}>{total}</ValueLabel>
+      <ValueLabel valueSign={valueSign}>{valueToCurrencyString}</ValueLabel>
     </FooterBox>
   );
 }
 
 export default function Entries() {
   const navigate = useNavigate();
-  // const location = useLocation();
-  // const { dataFromResponse } = location.state;
   const { userSession } = useContext(UserContext);
+  const { userData } = useContext(DataContext);
   const [data, setData] = useState(undefined);
   const [total, setTotal] = useState(0);
 
@@ -47,7 +50,10 @@ export default function Entries() {
     if (userSession === undefined) {
       navigate("/");
     }
-    
+    console.log(userData);
+    if(userData.length > 0) {
+      setData(userData.data);
+    }
     getEntries();
   }, [userSession, navigate]);
 
