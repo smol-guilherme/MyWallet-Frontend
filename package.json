@@ -2,6 +2,7 @@
   "name": "projeto13-mywallet-front",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "axios": "^0.27.2",
     "dayjs": "^1.11.3",

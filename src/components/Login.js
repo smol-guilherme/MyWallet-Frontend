@@ -18,7 +18,7 @@ export default function Login() {
     e.preventDefault();
 
     const data = {
-      email: email,
+      email: email.toLowerCase(),
       password: password,
     };
 
@@ -27,8 +27,7 @@ export default function Login() {
       setUserSession(res.data);
       navigate("/entries");
     });
-    promise.catch((err) => console.log(err));
-    return;
+    promise.catch((err) => window.alert(err.response.data));
   }
 
   return (

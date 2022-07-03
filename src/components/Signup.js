@@ -19,12 +19,12 @@ export default function Signup() {
 
     const data = {
       name: name,
-      email: email,
+      email: email.toLowerCase(),
       password: password,
     };
     const promise = axios.post(`${URL}:${PORT}/signup`, data);
     promise.then((res) => navigate("/"));
-    promise.catch((err) => console.log(err));
+    promise.catch((err) => window.alert(err.response.data));
     return;
   }
 

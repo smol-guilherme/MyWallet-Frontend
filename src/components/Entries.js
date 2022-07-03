@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import UserContext from "./context/UserContext";
 import DataContext from "./context/DataContext";
 
@@ -10,19 +10,32 @@ const URL = "http://localhost";
 const PORT = "5000";
 
 function Entry({ data, submitDelete, navigate }) {
-  console.log(data);
   const valueSign = data.value > 0 ? "#03AC00" : "#C70000";
   const op = data.value > 0 ? true : false;
-  const valueToCurrencyString = data.value.toFixed(2).toString().replace(".",",")
+  const valueToCurrencyString = data.value
+    .toFixed(2)
+    .toString()
+    .replace(".", ",");
   return (
     <EntryBox iid={data.id}>
       <EntryItem>
-          <Date>{data.date}</Date>
-          <Description onClick={() => navigate("/submit", { state: { operation: op, edit: true, data: data } })}>{data.description}</Description>
+        <Date>{data.date}</Date>
+        <Description
+          onClick={() =>
+            navigate("/submit", {
+              state: { operation: op, edit: true, data: data },
+            })
+          }
+        >
+          {data.description}
+        </Description>
       </EntryItem>
       <EntryItem>
         <EntryValue valueSign={valueSign}>{valueToCurrencyString}</EntryValue>
-        <ion-icon onClick={() => submitDelete(data.id)} name="close-outline"></ion-icon>
+        <ion-icon
+          onClick={() => submitDelete(data.id)}
+          name="close-outline"
+        ></ion-icon>
       </EntryItem>
     </EntryBox>
   );
@@ -30,7 +43,7 @@ function Entry({ data, submitDelete, navigate }) {
 
 function Footer({ total }) {
   const valueSign = total > 0 ? "#03AC00" : "#C70000";
-  const valueToCurrencyString = total.toString().replace(".",",")
+  const valueToCurrencyString = total.toString().replace(".", ",");
   return (
     <FooterBox>
       <Label>SALDO</Label>
@@ -43,18 +56,20 @@ export default function Entries() {
   const navigate = useNavigate();
   const { userSession } = useContext(UserContext);
   const { userData } = useContext(DataContext);
+  const [display, setDisplay] = useState(false);
   const [data, setData] = useState(undefined);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
+    console.log(userSession);
     if (userSession === undefined) {
       navigate("/");
     }
-    console.log(userData);
-    if(userData.length > 0) {
+    if (userData.length > 0) {
       setData(userData.data);
     }
     getEntries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userSession, navigate]);
 
   function getEntries() {
@@ -66,16 +81,16 @@ export default function Entries() {
     const promise = axios.get(`${URL}:${PORT}/data`, requisitionHeader);
     promise.then((res) => {
       const entries = res.data;
-      setTotal(entries.total)
+      setTotal(entries.total);
       setData(entries.data);
     });
     promise.catch((err) => {
-      console.log(err);
+      window.alert(err.response.data);
     });
   }
 
   function submitDelete(itemId) {
-    if(!window.confirm("Tem certeza que deseja deletar este item?")) {
+    if (!window.confirm("Tem certeza que deseja deletar este item?")) {
       return;
     }
     const requisitionHeader = {
@@ -83,15 +98,23 @@ export default function Entries() {
         Authorization: `Bearer ${userSession.token}`,
       },
     };
-    const promise = axios.delete(`${URL}:${PORT}/data/${itemId}`, requisitionHeader);
+    const promise = axios.delete(
+      `${URL}:${PORT}/data/${itemId}`,
+      requisitionHeader
+    );
     promise.then((res) => {
       const entries = res.data;
       setTotal(entries.total);
       setData(entries.data);
     });
     promise.catch((err) => {
-      console.log(err);
+      window.alert(err.response.data);
     });
+  }
+
+  function logOff() {
+    localStorage.clear();
+    navigate("/");
   }
 
   const Data = () => {
@@ -101,36 +124,68 @@ export default function Entries() {
     return (
       <>
         {data.map((item, index) => (
-          <Entry key={index} submitDelete={submitDelete} navigate={navigate} data={item} />
+          <Entry
+            key={index}
+            submitDelete={submitDelete}
+            navigate={navigate}
+            data={item}
+          />
         ))}
       </>
     );
+  };
+
+  const Dropdown = () => {
+    if (display) {
+      return (
+        <>
+          <ArrowUp />
+          <ExitButton onClick={logOff}>Sair</ExitButton>
+        </>
+      );
+    } else {
+      return (
+        <ExitIcon>
+          <ion-icon name="exit-outline"></ion-icon>
+        </ExitIcon>
+      );
+    }
   };
 
   return (
     <Container>
       <HeaderWrapper>
         <Header>Olá, {userSession && userSession.name}</Header>
-        <ion-icon name="exit-outline"></ion-icon>
+        <Dropdown onClick={() => setDisplay(!display)} />
       </HeaderWrapper>
       <ContentWrapper>
-        <DataWrapper>
-          {<Data />}
-        </DataWrapper>
+        <DataWrapper>{<Data />}</DataWrapper>
         <Footer total={total} />
       </ContentWrapper>
       <ButtonWrapper>
         <Button
-          onClick={() => navigate("/submit", { state: { operation: true, edit: false } })}
+          onClick={() =>
+            navigate("/submit", { state: { operation: true, edit: false } })
+          }
         >
           <ion-icon name="add-circle-outline"></ion-icon>
-          <p>Nova<br/>entrada</p>
+          <p>
+            Nova
+            <br />
+            entrada
+          </p>
         </Button>
         <Button
-          onClick={() => navigate("/submit", { state: { operation: false, edit: false } })}
+          onClick={() =>
+            navigate("/submit", { state: { operation: false, edit: false } })
+          }
         >
           <ion-icon name="remove-circle-outline"></ion-icon>
-          <p>Nova<br/>saida</p>
+          <p>
+            Nova
+            <br />
+            saida
+          </p>
         </Button>
       </ButtonWrapper>
     </Container>
@@ -188,7 +243,7 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   color: #868686;
   text-align: center;
   margin: 15px 0;
@@ -240,13 +295,13 @@ const EntryBox = styled.div`
 const EntryItem = styled.div`
   font-family: "Raleway", sans-serif;
   height: 20px;
-  color: #C6C6C6;
+  color: #c6c6c6;
 `;
 
 const Date = styled.p`
   display: flex;
   width: 52px;
-`
+`;
 
 const Description = styled.p`
   max-width: 22vh;
@@ -262,11 +317,11 @@ const Description = styled.p`
   ::-webkit-scrollbar {
     display: none;
   }
-`
+`;
 
 const EntryValue = styled.div`
   font-family: "Raleway", sans-serif;
-  color: ${({valueSign}) => valueSign};
+  color: ${({ valueSign }) => valueSign};
   display: flex;
   max-width: 80px;
   justify-content: right;
@@ -281,7 +336,7 @@ const Label = styled.h1`
 
 const ValueLabel = styled.h1`
   font-family: "Raleway", sans-serif;
-  color: ${ ({valueSign}) => valueSign};
+  color: ${({ valueSign }) => valueSign};
   font-weight: 400;
   font-size: 17px;
 `;
@@ -316,4 +371,35 @@ const Button = styled.div`
     letter-spacing: 0.1ch;
     line-height: 20px;
   }
+`;
+
+const ArrowUp = styled.div`
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #a328d6;
+  position: absolute;
+  bottom: -5px;
+  right: 20px;
+  z-index: 1;
+`;
+
+const ExitIcon = styled.div`
+  position: relative;
+`;
+
+const ExitButton = styled.div`
+  width: 60px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a328d6;
+  color: #ffffff;
+  box-shadow: 0 1px -2px 2px #66666640;
+  border-radius: 4px;
+  position: absolute;
+  bottom: -34px;
+  right: 17px;
 `;

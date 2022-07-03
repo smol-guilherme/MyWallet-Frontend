@@ -28,7 +28,6 @@ export default function Form() {
   }, [userSession, navigate]);
 
   function initValue() {
-    console.log(location.state.data);
     if(location.state && location.state.data !== undefined) {
       return location.state.data.value
     }
@@ -66,7 +65,7 @@ export default function Form() {
         setUserData(res.data)
         navigate("/entries");
       });
-      promise.catch((err) => console.log(err));
+      promise.catch((err) => window.alert(err.response.data));
     } else {
       const promise = axios.post(
         `${URL}:${PORT}/data`,
@@ -77,7 +76,7 @@ export default function Form() {
         setUserData(res.data)
         navigate("/entries");
       });
-      promise.catch((err) => console.log(err));
+      promise.catch((err) => window.alert(err.response.data));
     }
   }
 
