@@ -61,17 +61,18 @@ export default function Login() {
 
 const Container = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 85vh;
+  background-color: #8c11be;
   display: flex;
   flex-direction: column;
-  background-color: #8c11be;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+  padding-top: 15vh;
 `;
 
 const ContentWrapper = styled.div`
   width: 100%;
-  height: 50vh;
+  min-height: 50vh;
   background-color: transparent;
 `;
 
@@ -84,7 +85,10 @@ const Header = styled.h1`
 
 const LinkWrapper = styled.div`
   text-align: center;
-
+  min-height: 30px;
+  margin-top: 30px;
+  width: 100%;
+  
   a {
     font-family: "Raleway", sans-serif;
     text-decoration: none;
@@ -99,7 +103,7 @@ const FormWrapper = styled.form`
   align-items: center;
   display: flex;
   margin-top: 40px;
-  height: 30vh;
+  min-height: 30vh;
   width: 100%;
 `;
 
