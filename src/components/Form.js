@@ -91,7 +91,7 @@ export default function Form() {
           onChange={(e) => setValue(e.target.value)}
           type={"text"}
           pattern={cashPattern}
-          title={"Insira um numero no formato 'reais,centavos'."}
+          title={"Insira o valor no formato '0,00' (apenas números e uma vírgula)."}
           required
         />
         <FormInput
