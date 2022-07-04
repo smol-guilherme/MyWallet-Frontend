@@ -42,8 +42,15 @@ function Entry({ data, submitDelete, navigate }) {
 }
 
 function Footer({ total }) {
-  const valueSign = total > 0 ? "#03AC00" : "#C70000";
-  const valueToCurrencyString = total.toFixed(2).toString().replace(".", ",");
+  let valueSign;
+  let valueToCurrencyString;
+  if(total !== undefined) {
+    valueSign = total > 0 ? "#03AC00" : "#C70000";
+    valueToCurrencyString = total.toFixed(2).toString().replace(".", ",");
+  } else {
+    valueSign = "c6c6c6";
+    valueToCurrencyString = "0,00";
+  }
   return (
     <FooterBox>
       <Label>SALDO</Label>
@@ -294,7 +301,6 @@ const Description = styled.p`
   overflow: hidden;
   overflow-x: scroll;
   white-space: nowrap;
-  text-overflow: ellipsis;
   box-sizing: border-box;
   -ms-overflow-style: none;
   scrollbar-width: none;
