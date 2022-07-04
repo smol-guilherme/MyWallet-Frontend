@@ -43,7 +43,7 @@ function Entry({ data, submitDelete, navigate }) {
 
 function Footer({ total }) {
   const valueSign = total > 0 ? "#03AC00" : "#C70000";
-  const valueToCurrencyString = total.toString().replace(".", ",");
+  const valueToCurrencyString = total.toFixed(2).toString().replace(".", ",");
   return (
     <FooterBox>
       <Label>SALDO</Label>
@@ -56,7 +56,6 @@ export default function Entries() {
   const navigate = useNavigate();
   const { userSession } = useContext(UserContext);
   const { userData } = useContext(DataContext);
-  const [display, setDisplay] = useState(false);
   const [data, setData] = useState(undefined);
   const [total, setTotal] = useState(0);
 
@@ -112,8 +111,10 @@ export default function Entries() {
   }
 
   function logOff() {
-    localStorage.clear();
-    navigate("/");
+    if(!window.confirm("Tem certeza que deseja sair?")) {
+      navigate("/");
+    }
+    return;
   }
 
   const Data = () => {
@@ -134,28 +135,13 @@ export default function Entries() {
     );
   };
 
-  const Dropdown = () => {
-    if (display) {
-      return (
-        <>
-          <ArrowUp />
-          <ExitButton onClick={logOff}>Sair</ExitButton>
-        </>
-      );
-    } else {
-      return (
-        <ExitIcon>
-          <ion-icon name="exit-outline"></ion-icon>
-        </ExitIcon>
-      );
-    }
-  };
-
   return (
     <Container>
       <HeaderWrapper>
         <Header>Olá, {userSession && userSession.name}</Header>
-        <Dropdown onClick={() => setDisplay(!display)} />
+        <ExitIcon onClick={logOff}>
+          <ion-icon name="exit-outline"></ion-icon>
+        </ExitIcon>
       </HeaderWrapper>
       <ContentWrapper>
         <DataWrapper>{<Data />}</DataWrapper>
@@ -372,33 +358,6 @@ const Button = styled.div`
   }
 `;
 
-const ArrowUp = styled.div`
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid #a328d6;
-  position: absolute;
-  bottom: -5px;
-  right: 20px;
-  z-index: 1;
-`;
-
 const ExitIcon = styled.div`
   position: relative;
-`;
-
-const ExitButton = styled.div`
-  width: 60px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #a328d6;
-  color: #ffffff;
-  box-shadow: 0 1px -2px 2px #66666640;
-  border-radius: 4px;
-  position: absolute;
-  bottom: -34px;
-  right: 17px;
 `;
