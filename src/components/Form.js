@@ -51,7 +51,6 @@ export default function Form() {
 
     const requisitionHeader = {
       headers: {
-        "Access-Control-Allow-Origin": "*",
         Authorization: `Bearer ${userSession.token}`,
       },
     };

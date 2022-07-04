@@ -5,7 +5,7 @@ import UserContext from "./context/UserContext";
 import axios from "axios";
 import styled from "styled-components";
 
-const URL = "https://back-proj-mywallet.herokuapp.com";
+const URL = "https://back-proj-mywallet.herokuapp.com/";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,13 +21,7 @@ export default function Login() {
       password: password,
     };
 
-    const header = {
-      headers: {
-        "Access-Control-Allow-Origin": "*"
-      }
-    }
-
-    const promise = axios.post(`${URL}/`, data, header);
+    const promise = axios.post(`${URL}/`, data);
     promise.then((res) => {
       setUserSession(res.data);
       navigate("/entries");

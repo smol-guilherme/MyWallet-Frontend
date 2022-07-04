@@ -75,7 +75,6 @@ export default function Entries() {
   function getEntries() {
     const requisitionHeader = {
       headers: {
-        "Access-Control-Allow-Origin": "*",
         Authorization: `Bearer ${userSession.token}`,
       },
     };
@@ -96,7 +95,6 @@ export default function Entries() {
     }
     const requisitionHeader = {
       headers: {
-        "Access-Control-Allow-Origin": "*",
         Authorization: `Bearer ${userSession.token}`,
       },
     };
