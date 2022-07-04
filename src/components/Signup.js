@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
 
-const URL = "http://localhost";
+const URL = "https://back-proj-mywallet.herokuapp.com/";
 const PORT = "5000";
 
 export default function Signup() {

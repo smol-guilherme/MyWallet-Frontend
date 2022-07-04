@@ -6,7 +6,7 @@ import DataContext from "./context/DataContext";
 import axios from "axios";
 import styled from "styled-components";
 
-const URL = "http://localhost";
+const URL = "https://back-proj-mywallet.herokuapp.com/";
 const PORT = "5000";
 
 function Entry({ data, submitDelete, navigate }) {
