@@ -6,7 +6,7 @@ import DataContext from "./context/DataContext";
 import axios from "axios";
 import styled from "styled-components";
 
-const URL = "https://back-proj-mywallet.herokuapp.com/";
+const URL = "https://back-proj-mywallet.herokuapp.com";
 
 
 function Entry({ data, submitDelete, navigate }) {
