@@ -5,7 +5,7 @@ import UserContext from "./context/UserContext";
 import axios from "axios";
 import styled from "styled-components";
 
-const URL = "https://git.heroku.com/back-proj-mywallet.git";
+const URL = "http://git.heroku.com/back-proj-mywallet.git";
 
 export default function Login() {
   const navigate = useNavigate();

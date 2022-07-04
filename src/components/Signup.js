@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
 
-const URL = "https://git.heroku.com/back-proj-mywallet.git";
+const URL = "http://git.heroku.com/back-proj-mywallet.git";
 
 export default function Signup() {
   const navigate = useNavigate();
