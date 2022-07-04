@@ -21,7 +21,13 @@ export default function Login() {
       password: password,
     };
 
-    const promise = axios.post(`${URL}/`, data);
+    const header = {
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      }
+    }
+
+    const promise = axios.post(`${URL}/`, data, header);
     promise.then((res) => {
       setUserSession(res.data);
       navigate("/entries");
