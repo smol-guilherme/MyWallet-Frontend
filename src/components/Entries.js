@@ -61,7 +61,6 @@ export default function Entries() {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    console.log(userSession);
     if (userSession === undefined) {
       navigate("/");
     }
