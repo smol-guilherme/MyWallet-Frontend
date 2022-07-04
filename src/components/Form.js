@@ -6,8 +6,7 @@ import DataContext from "./context/DataContext";
 import axios from "axios";
 import styled from "styled-components";
 
-const URL = "https://back-proj-mywallet.herokuapp.com/";
-const PORT = "5000";
+const URL = "https://git.heroku.com/back-proj-mywallet.git";
 
 export default function Form() {
   const location = useLocation();
@@ -57,7 +56,7 @@ export default function Form() {
     };
     if (edit) {
       const promise = axios.put(
-        `${URL}:${PORT}/data/${data.id}`,
+        `${URL}/data/${data.id}`,
         submitData,
         requisitionHeader
       );
@@ -68,7 +67,7 @@ export default function Form() {
       promise.catch((err) => window.alert(err.response.data));
     } else {
       const promise = axios.post(
-        `${URL}:${PORT}/data`,
+        `${URL}/data`,
         submitData,
         requisitionHeader
       );

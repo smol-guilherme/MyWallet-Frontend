@@ -6,8 +6,8 @@ import DataContext from "./context/DataContext";
 import axios from "axios";
 import styled from "styled-components";
 
-const URL = "https://back-proj-mywallet.herokuapp.com/";
-const PORT = "5000";
+const URL = "https://git.heroku.com/back-proj-mywallet.git";
+
 
 function Entry({ data, submitDelete, navigate }) {
   const valueSign = data.value > 0 ? "#03AC00" : "#C70000";
@@ -78,7 +78,7 @@ export default function Entries() {
         Authorization: `Bearer ${userSession.token}`,
       },
     };
-    const promise = axios.get(`${URL}:${PORT}/data`, requisitionHeader);
+    const promise = axios.get(`${URL}/data`, requisitionHeader);
     promise.then((res) => {
       const entries = res.data;
       setTotal(entries.total);
@@ -99,7 +99,7 @@ export default function Entries() {
       },
     };
     const promise = axios.delete(
-      `${URL}:${PORT}/data/${itemId}`,
+      `${URL}/data/${itemId}`,
       requisitionHeader
     );
     promise.then((res) => {

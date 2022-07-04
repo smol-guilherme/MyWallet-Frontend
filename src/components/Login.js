@@ -5,8 +5,7 @@ import UserContext from "./context/UserContext";
 import axios from "axios";
 import styled from "styled-components";
 
-const URL = "https://back-proj-mywallet.herokuapp.com/";
-const PORT = "5000";
+const URL = "https://git.heroku.com/back-proj-mywallet.git";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export default function Login() {
       password: password,
     };
 
-    const promise = axios.post(`${URL}:${PORT}/`, data);
+    const promise = axios.post(`${URL}/`, data);
     promise.then((res) => {
       setUserSession(res.data);
       navigate("/entries");

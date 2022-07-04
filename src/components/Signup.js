@@ -4,8 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
 
-const URL = "https://back-proj-mywallet.herokuapp.com/";
-const PORT = "5000";
+const URL = "https://git.heroku.com/back-proj-mywallet.git";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export default function Signup() {
       email: email.toLowerCase(),
       password: password,
     };
-    const promise = axios.post(`${URL}:${PORT}/signup`, data);
+    const promise = axios.post(`${URL}/signup`, data);
     promise.then((res) => navigate("/"));
     promise.catch((err) => window.alert(err.response.data));
     return;
